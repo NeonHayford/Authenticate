@@ -28,9 +28,17 @@ class StudentForm(forms.ModelForm):
 
 
 
-class TeacherForm(forms.ModelForm):
+class passwordChangeView(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirmPassword = forms.CharField(widget=forms.PasswordInput)
 
     model = signUser
     fields = ['password', 'confirmPassword']
+
+
+
+# class resetPassword(forms.ModelForm):
+#     # email = forms.EmailField(max_length=200)
+
+#     model = signUser
+#     fields = ['email']

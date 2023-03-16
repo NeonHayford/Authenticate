@@ -7,8 +7,8 @@ class signUser(AbstractUser):
     username = models.CharField(max_length = 200, unique=True)
     email = models.EmailField(unique=True)
     
-    password = models.CharField(unique=True, serialize=True)
-    confirmPassword = models.CharField(unique=True)
+    # password = models.CharField(max_length=200, unique=True, serialize=True)
+    # confirmPassword = models.CharField(max_length=200, unique=True)
 
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'email'

@@ -1,15 +1,25 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserformAPI, UserRegisterAPI      #dev'ing of models
+from .forms import UserformAPI, UserRegisterAPI     #dev'ing of models  
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.core.mail import send_mail, BadHeaderError      #dev'ing of models
+from django.contrib.auth.forms import PasswordResetForm
+from django.template.loader import render_to_string
+from django.db.models.query_utils import Q
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from .models import signUser
 
 # Create your views here.
 # @login_required
 def index(request):
     return render(request, 'base.html', {})
-    
+
+
+
 def signin(request):
     form = UserformAPI()
     if request.method == 'POST':
@@ -20,13 +30,13 @@ def signin(request):
         if user == None:
             return HttpResponse("Invalid credentials.")
             
-            return redirect('/')  #watch here again
+            # return redirect('/')  #watch here again
         else:
             form = UserformAPI()
-    return render(request, 'login.html', {'form': form})
-        
+    return render(request, 'login.html', {'form': form})  
     # return HttpResponse("Valid credentials.")
         
+
 
 def signout(request):
     logout(request)
@@ -35,32 +45,20 @@ def signout(request):
         
 
 def signup(request):
+    form = UserRegisterAPI()
     if request.method == 'POST':
-        firstname = request.POST['first_name']
-        lastname = request.POST['last_name']
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
-        newuser = User.objects.create_user( first_name = firstname, last_name = lastname, username = username, email= email, password = password)
-        try:
-            newuser.save()
-        except:
-            return render('Something went wrong')
+        form = UserRegisterAPI(request.POST)
+        if form.is_valid():
+            first_name = form.cleaned_data.get('firstname')
+            last_name = form.cleaned_data.get('lastname')
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = signUser.objects.create_user(first_name = first_name, last_name = last_name, username = username, email= email, password = password)
+            user.save()
     else:
         form = UserRegisterAPI()
     return render(request, 'register.html', {'form': form})
-
-
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail, BadHeaderError
-from django.http import HttpResponse
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.models import User
-from django.template.loader import render_to_string
-from django.db.models.query_utils import Q
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_bytes
 
 
 
@@ -90,25 +88,29 @@ def passwordChange(request):
 						return HttpResponse('Invalid header found.')
 					return redirect ("passwordChange/done/")
 	password_reset_form = PasswordResetForm()
-	return render(request=request, template_name="templates/reset_pages_template/reset_page.html", context={"password_reset_form":password_reset_form})
+	return render(request, 'reset_pages_template/password_change.html')
 
-def resetPageView(request):
+
+
+def resetPage(request):
     if request.method == 'POST':
         password = request.POST['password']
         confirmPassword = request.POST['confirmPassword']
         newuser = User.objects.create_user( password = password, confirmPassword = confirmPassword)
         try:
             newuser.save()
-        except:
-            return render('Please go back!')
+        except ValueError:
+            return HttpResponse('Please go back!')
     else:
         form = UserRegisterAPI()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'reset_pages_template/reset_page.html')
+
 
 
 def resetPageDone(request):
-     return render(request=request, template_name='templates/reset_pages_template/reset_page_done.html')
+     return render(request, 'reset_pages_template/reset_page_done.html')
+
 
 
 def passwordChangeDone(request):
-     return render(request=request, template_name='templates/reset_pages_template/password_change_done.html')
+     return render(request, 'reset_pages_template/password_change_done.html')
