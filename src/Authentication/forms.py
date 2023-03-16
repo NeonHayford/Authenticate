@@ -25,3 +25,12 @@ class UserRegisterAPI(forms.ModelForm):
 
 class StudentForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+
+class TeacherForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirmPassword = forms.CharField(widget=forms.PasswordInput)
+
+    model = signUser
+    fields = ['password', 'confirmPassword']

@@ -64,7 +64,7 @@ from django.utils.encoding import force_bytes
 
 
 
-def passwordChangeDone(request):
+def passwordChange(request):
 	if request.method == "POST":
 		password_reset_form = PasswordResetForm(request.POST)
 		if password_reset_form.is_valid():
@@ -91,3 +91,24 @@ def passwordChangeDone(request):
 					return redirect ("passwordChange/done/")
 	password_reset_form = PasswordResetForm()
 	return render(request=request, template_name="templates/reset_pages_template/reset_page.html", context={"password_reset_form":password_reset_form})
+
+def resetPageView(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        confirmPassword = request.POST['confirmPassword']
+        newuser = User.objects.create_user( password = password, confirmPassword = confirmPassword)
+        try:
+            newuser.save()
+        except:
+            return render('Please go back!')
+    else:
+        form = UserRegisterAPI()
+    return render(request, 'register.html', {'form': form})
+
+
+def resetPageDone(request):
+     return render(request=request, template_name='templates/reset_pages_template/reset_page_done.html')
+
+
+def passwordChangeDone(request):
+     return render(request=request, template_name='templates/reset_pages_template/password_change_done.html')
