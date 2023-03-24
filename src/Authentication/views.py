@@ -92,7 +92,7 @@ def passwordChange(request):
 	password_reset_form = PasswordResetForm()
 	return render(request, 'reset_pages_template/password_change.html', {'password_reset_form':password_reset_form })
     
-
+#intialization function depending on settings
 
 
 
