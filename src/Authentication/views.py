@@ -11,7 +11,9 @@ from django.db.models.query_utils import Q
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
-from .models import signUser
+from django.conf import settings
+# from .models import signUser
+from Authentication.models import signUser
 
 # Create your views here.
 # @login_required
@@ -71,7 +73,7 @@ def passwordChange(request):
 			if associated_users.exists():
 				for user in associated_users:
 					subject = "Password Reset Requested"
-					email_template_name = "templates/reset_email.txt"
+					email_template_name = "templates/reset_mail.txt"
 					c = {
 					"email":user.email,
 					'domain':'127.0.0.1:8000',
@@ -83,12 +85,14 @@ def passwordChange(request):
 					}
 					email = render_to_string(email_template_name, c)
 					try:
-						send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+						send_mail(subject=subject, message='hh', from_email=settings.EMAIL_HOST_USER, fail_silently=False, html_message=email)
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
-					return redirect ("passwordChange/done/")
+					return redirect ("passwordChange/done/")                     
 	password_reset_form = PasswordResetForm()
-	return render(request, 'reset_pages_template/password_change.html')
+	return render(request, 'reset_pages_template/password_change.html', {'password_reset_form':password_reset_form })
+    
+
 
 
 
