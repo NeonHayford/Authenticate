@@ -85,7 +85,7 @@ def passwordChange(request):
 					}
 					email = render_to_string(email_template_name, c)
 					try:
-						send_mail(subject=subject, message='hh', from_email=settings.EMAIL_HOST_USER, fail_silently=False, html_message=email)
+						send_mail(subject=subject, message=c, from_email=settings.EMAIL_HOST_USER, recipient_list=[user.email])
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
 					return redirect ("passwordChange/done/")                     
