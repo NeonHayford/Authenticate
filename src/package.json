@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^3.3.1"
+  },
+  "scripts":{
+    "dev":"tailwindcss -i src/input/style-input.css -o src/Authentication/css/style.css --watch"
+  }
+}
