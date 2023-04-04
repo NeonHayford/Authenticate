@@ -13,15 +13,16 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.conf import settings
 # from .models import signUser
+from django.views.decorators.csrf import csrf_protect
 from Authentication.models import signUser
 
 # Create your views here.
-# @login_required
+@csrf_protect
 def index(request):
     return render(request, 'base.html', {})
 
 
-
+@csrf_protect
 def signin(request):
     form = UserformAPI()
     if request.method == 'POST':
@@ -45,7 +46,7 @@ def signout(request):
     return redirect('/')
     
         
-
+@csrf_protect
 def signup(request):
     form = UserRegisterAPI()
     if request.method == 'POST':
@@ -63,7 +64,7 @@ def signup(request):
     return render(request, 'register.html', {'form': form})
 
 
-
+@csrf_protect
 def passwordChange(request):
 	if request.method == "POST":
 		password_reset_form = PasswordResetForm(request.POST)
@@ -95,7 +96,7 @@ def passwordChange(request):
 #intialization function depending on settings
 
 
-
+@csrf_protect
 def resetPage(request):
     if request.method == 'POST':
         password = request.POST['password']
@@ -110,11 +111,11 @@ def resetPage(request):
     return render(request, 'reset_pages_template/reset_page.html')
 
 
-
+@csrf_protect
 def resetPageDone(request):
      return render(request, 'reset_pages_template/reset_page_done.html')
 
 
-
+@csrf_protect
 def passwordChangeDone(request):
      return render(request, 'reset_pages_template/password_change_done.html')
